@@ -1,5 +1,5 @@
 # HHbblvjj
-Analysis on HH vs ttbar decay into bblvjj 
+Analysis of HH vs ttbar decay into bblvjj 
 
 HH.lhe can be found here     http://govoni.web.cern.ch/govoni/HH.lhe.gz
 
