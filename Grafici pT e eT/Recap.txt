@@ -1,0 +1,24 @@
+Transverse momentum analysis of 
+   - charged  lepton
+   - vector  sum  of  b  and  bbar
+   - vector  sum  of  jet’s  quarks
+   - vector  sum  of  WW  components  (without  neutrino)
+   
+Transverse  energy  analysis of 
+  - charged  lepton
+  - vector sum  of  b  and  bbar
+  - vector sum  of  jet’s  quarks
+ 
+Other variables: 
+ - scalar  sum  of  all  transverse  momenta  (Ht)
+ - scalar  sum  of  all  transverse  momenta  without  neutrino
+ - transverse  missing  momentum
+ 
+ Merit factors:
+- Product between significance level ( S_sx) and power (B_dx) that must be minimized
+- Fattore di merito S_sx/sqrt(B_sx)
+- Signal purity: purity = (1-S_sx)*N_s / ( (1-S_sx)*N_s + B_dx*N_b )
+Note: S_sx cdf_signal(0,x)
+      B_dx cdf_background(inf, x)
+      
+Lep_pt, Ptm, bb_pt or bb_et show the more different distributions we may proceed to a toy MC simulation. 
