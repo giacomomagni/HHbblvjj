@@ -1,0 +1,11 @@
+R and Phi angles analyzed:
+
+  - delta b_bbar: the two particles are boosted in the same direction. Peak at 2*Mh/<pT>
+  
+  - delta lep_jj: the particles are highly boosted in the same dicerction 
+  
+  - delta bbar_lepjj:  HH are created mostly back to back.   
+  
+Two cuts may be proposed: 
+  - deltaR bbar_lepjj > 2.85
+  - deltaR lep_jj < 0.9 
