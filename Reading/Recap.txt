@@ -1,0 +1,17 @@
+File  HH.lhe  contains  100000  events  of  an  HH  decay  into:
+  - pair  b  bar.
+  
+  - pair  charged  lepton  (electron,  positron,  muon,  antimuon)  neutrino.
+  
+  - pair  quark  antiquark  (  u  dbar,  c  dbar,  u  sbar,  c  sbar  )
+
+File ttbar.lhe contains  500000  events  of  a  top  antitop  decay:
+  - In  around  49%  of  them  the  2  bosons  WW  decay  creating  a  double  jet
+
+  - In  around  9%  of  them  the  2  bosons  WW  decay  without  a  jet
+
+  - In  around  10%  there  is  a  tau  or  an  antitau  in  the  final  state
+
+I  excluded  352010  events  that  have  a  different  final  state  comparing  to  the  signal.
+
+Only events with the correct signature are stored in the TTree.
