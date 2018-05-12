@@ -14,4 +14,7 @@ File ttbar.lhe contains  500000  events  of  a  top  antitop  decay:
 
 I  excluded  352010  events  that  have  a  different  final  state  comparing  to  the  signal.
 
-Only events with the correct signature are stored in the TTree.
+Only events with the correct signature (bblvjj) are stored in the TTree.
+
+NOTE
+cutreading.cpp stores in a TTree only events with the correct signature and fulfilling the proposed cuts
