@@ -1,0 +1,21 @@
+The following invarian masses are analyzed:
+
+ - Mbb
+ 
+ - Mjj
+ 
+ - Mww (without the neutrino)
+
+Some cuts on the background are applied: 
+  -- 120 < Mbb < 130 GeV/c^2
+  -- Mww < 125       GeV/c^2
+The events are separated in two categories:
+  -- Mjj > 50        GeV/c^2
+  -- Mjj < 50        GeV/c^2    there is no Background (they won't be considered in this analysis anymore)
+
+This choice select around:
+   50% of the signal events (only the 3rd is effective on the signal) 
+   3% of the background events (only the the two cuts are effective) 
+       
+NOTE: 
+if Mjj < 50 GeV/c^2 there is no Background, in ttbar no W are created OffShell. 
