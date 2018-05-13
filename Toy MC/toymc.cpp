@@ -31,7 +31,7 @@
 // 	-- Evaluate N_s and N_b exepected
 
 // c++ -o toymc toymc.cpp `root-config --cflags --glibs`
-//./toymcs q1 q2...
+//./toymc q1 q2...
 
 #include <iostream>
 #include <TH1D.h>
@@ -47,6 +47,7 @@
 #include <TF1.h>
 #include <TGraphErrors.h>
 #include <TMultiGraph.h>
+#include <TRandom.h>
 #include <TPaveStats.h>
 #include <TApplication.h>
 #include <fstream>
@@ -63,18 +64,18 @@ using namespace std;
 void setstack(TH1D * hs, TH1D * hb, THStack * stack ){	
 	hb->SetFillStyle(3003);
 	hs->SetFillStyle(3004);
-    	hs->SetFillColor(2);
+    hs->SetFillColor(2);
 	hb->SetFillColor(4);
 	hs->SetLineColor(2);
 	hb->SetLineColor(4);	
 	stack->Add(hs, "S");
 	stack->Add(hb, "S");
-    	stack->Draw("nostack");
+    stack->Draw("nostack");
 	gPad->SetGrid(1,1);		
 	TLegend *legend = new TLegend(0.8,0.2,0.98,0.38);
-    	legend->AddEntry(hs,"Signal", "f");
-    	legend->AddEntry(hb,"Background", "f");
-   	legend->Draw("SAME");
+    legend->AddEntry(hs,"Signal", "f");
+    legend->AddEntry(hb,"Background", "f");
+    legend->Draw("SAME");
 	gPad->Update();
 	TPaveStats * sb1 = (TPaveStats * )(hs->GetListOfFunctions()->FindObject("stats"));
 	TPaveStats * sb2 = (TPaveStats * )(hb->GetListOfFunctions()->FindObject("stats"));
@@ -91,18 +92,18 @@ void setstack1(TH1D * hs, TH1D * hb, THStack * stack ){
 	gStyle->SetOptFit(1111);
 	hb->SetFillStyle(3003);
 	hs->SetFillStyle(3004);
-  	hs->SetFillColor(2);
+    hs->SetFillColor(2);
 	hb->SetFillColor(4);
 	hs->SetLineColor(2);
 	hb->SetLineColor(4);	
 	stack->Add(hs, "S");
 	stack->Add(hb, "S");
-   	stack->Draw("nostack");
+    stack->Draw("nostack");
 	gPad->SetGrid(1,1);		
 	TLegend *legend1 = new TLegend(0.8,0.2,0.98,0.38);
-    	legend1->AddEntry(hs,"Signal", "f");
-    	legend1->AddEntry(hb,"Background +Signal", "f");
-   	legend1->Draw("SAME");
+    legend1->AddEntry(hs,"Signal", "f");
+    legend1->AddEntry(hb,"Background +Signal", "f");
+    legend1->Draw("SAME");
 	gPad->Update();
 	TPaveStats * sb = (TPaveStats * )(hb->GetListOfFunctions()->FindObject("stats"));
 	sb->SetX1NDC(.55);	sb->SetX2NDC(0.98);	sb->SetY1NDC(.4);	sb->SetY2NDC(.9);
@@ -121,17 +122,17 @@ void ToyMC( string var ){
 	cout << "Max: "; cin >> max;
 	cout << "Nbin: "; cin >> nbin; 
 	cout << "Polinomial degree: "; cin >> dof;
-//	min=0; max=500; nbin=500;
+
 
 	//ISTOGRAMMI DELLE DISTIBUZIONI	
-    	TFile * sinput = TFile::Open( "HH.root" );
-    	TFile * binput = TFile::Open( "ttbar.root" );
-    	TTree * signal  = (TTree*)sinput->Get("tree");
-    	TTree * background  = (TTree*)binput->Get("tree");
+    TFile * sinput = TFile::Open( "HH.root" );
+    TFile * binput = TFile::Open( "ttbar.root" );
+    TTree * signal  = (TTree*)sinput->Get("tree");
+    TTree * background  = (TTree*)binput->Get("tree");
 	string title1 = "Background_" + var;
 	string title2 = "Signal_" + var;
 	TCanvas * can = new TCanvas( "can" , "pdf lhe files");
-	THStack * dist = new THStack("dist", "pdf lhe files");
+	THStack * dist = new THStack("dist", var.c_str() );
 	TH1D * hs = new TH1D( title2.c_str(), "Signal", nbin,min,max);
 	TH1D * hb = new TH1D( title1.c_str(), "Background", nbin,min,max); 
 
@@ -182,8 +183,8 @@ void ToyMC( string var ){
 	}
 
 	//FIT DELLA PDF viene usata una distribuzione Gamma
-	TF1 * pdf_funzs = new TF1("pdf_funzs", Form("pol%i", dof), min, max);
-	TF1 * pdf_funzb = new TF1("pdf_funzb", Form("pol%i", dof), min, max );
+	TF1 * pdf_funzs = new TF1("pdf_funzs", Form("abs(pol%i)", dof), min, max);
+	TF1 * pdf_funzb = new TF1("pdf_funzb", Form("abs(pol%i)", dof), min, max );
 	pdf_funzs->SetLineColor(2);
 	pdf_funzb->SetLineColor(4);
 	hs->Fit("pdf_funzs", "RQ");
@@ -219,7 +220,7 @@ void ToyMC( string var ){
 		bs[i]->FillRandom( "pdf_funzs", evs_exp );
 		s[i]->FillRandom( "pdf_funzs",  evs_exp );
 		
-		string funz = Form("[0]*pol%i(2)+[1]*pol%i(%i)", dof, dof, dof+3);
+		string funz = Form("[0]*abs(pol%i(2))+[1]*abs(pol%i(%i))", dof, dof, dof+3);
 		TF1 * funz_bs = new TF1("funz_bs", funz.c_str() , min, max );
 		funz_bs->SetParameter(0, evs_exp);
 		funz_bs->SetParameter(1, evb_exp);
@@ -246,8 +247,9 @@ void ToyMC( string var ){
 
 	//Disegno del grafico
 	
+	
 	TCanvas * c5 = new TCanvas("c5", "N_s vs luminosity");
-	mg->SetTitle("sigma N_signal/N_signal vs Luminosity; Luminosity [fb^-1]; N_s");
+	mg->SetTitle("N_signal vs Luminosity; Luminosity [fb^-1]; N_s");
 	gPad->SetGrid(1,1);
 	gr->SetMarkerStyle(20);
 	gr->SetMarkerSize(0.7);
@@ -275,6 +277,7 @@ int main(int argc, char** argv){
         cout << "Usage: " << argv[0] << " quantity " << endl;
         return 1;
     }
+	gRandom->SetSeed(0);
 	TApplication * Grafica = new TApplication("App", 0, 0);
 	ToyMC( argv[1] );
 	Grafica->Run();
