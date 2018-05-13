@@ -63,18 +63,18 @@ using namespace std;
 void setstack(TH1D * hs, TH1D * hb, THStack * stack ){	
 	hb->SetFillStyle(3003);
 	hs->SetFillStyle(3004);
-    hs->SetFillColor(2);
+    	hs->SetFillColor(2);
 	hb->SetFillColor(4);
 	hs->SetLineColor(2);
 	hb->SetLineColor(4);	
 	stack->Add(hs, "S");
 	stack->Add(hb, "S");
-    stack->Draw("nostack");
+    	stack->Draw("nostack");
 	gPad->SetGrid(1,1);		
 	TLegend *legend = new TLegend(0.8,0.2,0.98,0.38);
-    legend->AddEntry(hs,"Signal", "f");
-    legend->AddEntry(hb,"Background", "f");
-    legend->Draw("SAME");
+    	legend->AddEntry(hs,"Signal", "f");
+    	legend->AddEntry(hb,"Background", "f");
+   	legend->Draw("SAME");
 	gPad->Update();
 	TPaveStats * sb1 = (TPaveStats * )(hs->GetListOfFunctions()->FindObject("stats"));
 	TPaveStats * sb2 = (TPaveStats * )(hb->GetListOfFunctions()->FindObject("stats"));
@@ -91,18 +91,18 @@ void setstack1(TH1D * hs, TH1D * hb, THStack * stack ){
 	gStyle->SetOptFit(1111);
 	hb->SetFillStyle(3003);
 	hs->SetFillStyle(3004);
-    hs->SetFillColor(2);
+  	hs->SetFillColor(2);
 	hb->SetFillColor(4);
 	hs->SetLineColor(2);
 	hb->SetLineColor(4);	
 	stack->Add(hs, "S");
 	stack->Add(hb, "S");
-    stack->Draw("nostack");
+   	stack->Draw("nostack");
 	gPad->SetGrid(1,1);		
 	TLegend *legend1 = new TLegend(0.8,0.2,0.98,0.38);
-    legend1->AddEntry(hs,"Signal", "f");
-    legend1->AddEntry(hb,"Background +Signal", "f");
-    legend1->Draw("SAME");
+    	legend1->AddEntry(hs,"Signal", "f");
+    	legend1->AddEntry(hb,"Background +Signal", "f");
+   	legend1->Draw("SAME");
 	gPad->Update();
 	TPaveStats * sb = (TPaveStats * )(hb->GetListOfFunctions()->FindObject("stats"));
 	sb->SetX1NDC(.55);	sb->SetX2NDC(0.98);	sb->SetY1NDC(.4);	sb->SetY2NDC(.9);
@@ -124,10 +124,10 @@ void ToyMC( string var ){
 //	min=0; max=500; nbin=500;
 
 	//ISTOGRAMMI DELLE DISTIBUZIONI	
-    TFile * sinput = TFile::Open( "HH.root" );
-    TFile * binput = TFile::Open( "ttbar.root" );
-    TTree * signal  = (TTree*)sinput->Get("tree");
-    TTree * background  = (TTree*)binput->Get("tree");
+    	TFile * sinput = TFile::Open( "HH.root" );
+    	TFile * binput = TFile::Open( "ttbar.root" );
+    	TTree * signal  = (TTree*)sinput->Get("tree");
+    	TTree * background  = (TTree*)binput->Get("tree");
 	string title1 = "Background_" + var;
 	string title2 = "Signal_" + var;
 	TCanvas * can = new TCanvas( "can" , "pdf lhe files");
@@ -157,7 +157,7 @@ void ToyMC( string var ){
 	while ( reader_b.Next() ) {
 		tot_ev++;
 		if ( * mww <= 125. && * mbb >= 120. && * mbb <= 130. && * mvbs_b >= 50.){
-			hb->Fill(* variable_b);
+			hb->Fill( log(* variable_b) );
 			b_ev++;
 		}
 	}
@@ -167,7 +167,7 @@ void ToyMC( string var ){
 	while ( reader_s.Next() ) {
 		tot_ev += 1 ;	
 		if ( * mvbs_s >= 50.){
-			hs->Fill( * variable_s );
+			hs->Fill( log(* variable_s) );
 			s_ev ++;						
 		}
 	}
@@ -245,7 +245,6 @@ void ToyMC( string var ){
 	}
 
 	//Disegno del grafico
-	
 	
 	TCanvas * c5 = new TCanvas("c5", "N_s vs luminosity");
 	mg->SetTitle("sigma N_signal/N_signal vs Luminosity; Luminosity [fb^-1]; N_s");
