@@ -30,50 +30,31 @@ void histo_cutmass( TTree * tree_s, TTree * tree_b, TH1D * hs,  TH1D * hb, strin
 	//Dal TTree del background vengono selezionati gli eventi con:  
 	// -- mww < 125 [GeV]/c^2
 	// -- 120 < mbb < 125 [GeV]/c^2
-	//Gli eventi sono poi divisi in due categorie: mvbs <= 50 e mvbs > 50 [GeV]/c^2
+	//Gli eventi sono poi divisi in due categorie: mjj <= 50 e mjj > 50 [GeV]/c^2
 	// -- DeltaR_ljj < 0.9
-	//Vengono studiati GLI EVENTI A MASSA MVBS ALTA ( entambi i W on-Shell ) 
+	//Vengono studiati GLI EVENTI A MASSA MJJ ALTA ( entambi i W on-Shell ) 
 	//Viene poi fatto un istogramma della pdf di ogni variabile scelta
  
 	TTreeReader reader_s( tree_s );
 	TTreeReader reader_b( tree_b );
 	TTreeReaderValue<double> mbb(reader_b, "mww"); 
 	TTreeReaderValue<double> mww(reader_b, "mbb"); 
-	TTreeReaderValue<double> mvbs_b(reader_b, "mvbs");
-	TTreeReaderValue<double>  b1_phi_b( reader_b, "b1_phi");
-	TTreeReaderValue<double>  b2_phi_b( reader_b, "b2_phi");
-	TTreeReaderValue<double>  vbs1_phi_b( reader_b, "vbs1_phi");
-	TTreeReaderValue<double>  vbs2_phi_b( reader_b, "vbs2_phi");
-	TTreeReaderValue<double>  lep_phi_b( reader_b, "lep_phi");
-	TTreeReaderValue<double>  b1_eta_b( reader_b, "b1_eta");
-	TTreeReaderValue<double>  b2_eta_b( reader_b, "b2_eta");
-	TTreeReaderValue<double>  vbs1_eta_b( reader_b, "vbs1_eta");
-	TTreeReaderValue<double>  vbs2_eta_b( reader_b, "vbs2_eta");
-	TTreeReaderValue<double>  lep_eta_b( reader_b, "lep_eta");
-
-	TTreeReaderValue<double> mvbs_s(reader_s, "mvbs");
-	TTreeReaderValue<double>  b1_phi_s( reader_s, "b1_phi");
-	TTreeReaderValue<double>  b2_phi_s( reader_s, "b2_phi");
-	TTreeReaderValue<double>  vbs1_phi_s( reader_s, "vbs1_phi");
-	TTreeReaderValue<double>  vbs2_phi_s( reader_s, "vbs2_phi");
-	TTreeReaderValue<double>  lep_phi_s( reader_s, "lep_phi");
-	TTreeReaderValue<double>  b1_eta_s( reader_s, "b1_eta");
-	TTreeReaderValue<double>  b2_eta_s( reader_s, "b2_eta");
-	TTreeReaderValue<double>  vbs1_eta_s( reader_s, "vbs1_eta");
-	TTreeReaderValue<double>  vbs2_eta_s( reader_s, "vbs2_eta");
-	TTreeReaderValue<double>  lep_eta_s( reader_s, "lep_eta");
+	TTreeReaderValue<double> mjj_b(reader_b, "mjj");
+	
+	TTreeReaderValue<double> mjj_s(reader_s, "mjj");
+	
 	TTreeReaderValue<double>  variable_b( reader_b, var.c_str());
 	TTreeReaderValue<double>  variable_s( reader_s, var.c_str());
 
 	//Selezione eventi backgrond e scrittura degli istogrammi 
 	while ( reader_b.Next() ) {
-		if ( * mww <= 125. && * mbb >= 120. && * mbb <= 130. && * mvbs_b >= 50.){
+		if ( * mww <= 125. && * mbb >= 120. && * mbb <= 130. && * mjj_b >= 50.){
 				hb->Fill(* variable_b);
 		}
 	}	
 	//Scrittura degli istogrammi del segnale
 	while ( reader_s.Next() ) {
-		if ( * mvbs_s >= 50.){
+		if ( * mjj_s >= 50.){
 				hs->Fill(* variable_s);			
 		}
 	}
@@ -217,8 +198,6 @@ void DrawHisto(TTree * signal, TTree * background, string * var, TCanvas ** c, T
 //Le grandezze di cui fare i grafici vanno passate sulla riga di comando.
 //Per vedere i nomi con cui sono salvate nei TTree, consultare il file di lettura reading.cpp
 //Il programma chiede di inserire il range di ogni variabile. Le grandezze hanno  circa i seguenti range:
-//	var_phi: -pi, pi
-//	var_eta: -4, 4
 //	var_Et: 0, 350
 //	var_pt:	0, 350
 //	Ht, Htnu: 120, 800
