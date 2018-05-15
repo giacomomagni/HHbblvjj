@@ -1,7 +1,7 @@
 //Read and store all the variables
 //
 
-// c++ -o completereading completereading.cpp `root-config --cflags --glibs`
+// c++ -o reading reading.cpp `root-config --cflags --glibs`
 #include "LHEF.h"
 #include<iostream>
 #include "TH1.h"
