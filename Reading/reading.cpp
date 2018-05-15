@@ -1,6 +1,7 @@
-//read the file HH and ttbar
+//Read and store all the variables
 //
-// c++ -o reading reading.cpp `root-config --cflags --glibs`
+
+// c++ -o completereading completereading.cpp `root-config --cflags --glibs`
 #include "LHEF.h"
 #include<iostream>
 #include "TH1.h"
@@ -26,51 +27,49 @@ int main(int argc, char** argv){
     
     double lep_eta, lep_pt, lep_E, lep_Et, lep_phi;
     double n_eta, n_pt;
-    double vbs1_eta, vbs1_pt, vbs1_phi, vbs2_eta, vbs2_pt, vbs2_phi;
+    double j1_eta, j1_pt, j1_phi, j2_eta, j2_pt, j2_phi;
 	double b1_eta, b1_pt, b1_phi, b2_eta, b2_pt, b2_phi;
-    double mww, mvbs, mbb;
-	double ww_pt, vbs_pt, bb_pt;
-	double vbs_Et, bb_Et;
+    double mww, mjj, mbb;
+	double ww_pt, j_pt, bb_pt;
+	double j_Et, bb_Et, ww_Et;
 	double Ht, Htnu, Ptm;
+	double deltar_ljj, deltar_bbljj, deltar_bb;
+	double deltaphi_ljj, deltaphi_bbljj, deltaphi_bb;
     
-    TH1F *q1 = new TH1F("q1", "PGID of vbs1", 20, -10, 10);
-	TH1F *q2 = new TH1F("q2", "PGID of vbs2", 20, -10, 10);   
+    TH1F *q1 = new TH1F("q1", "PGID of j1", 20, -10, 10);
+	TH1F *q2 = new TH1F("q2", "PGID of j2", 20, -10, 10);   
     TH1F* l1 = new TH1F("l1", "PGID of lepton", 40, -20, 20);
-    
-    tree->Branch("lep_eta", &lep_eta);
+   
     tree->Branch("lep_pt", &lep_pt);
 	tree->Branch("lep_E", &lep_E);
 	tree->Branch("lep_Et", &lep_Et);
-	tree->Branch("lep_phi", &lep_phi);
-    tree->Branch("n_eta", &n_eta);
     tree->Branch("n_pt", &n_pt);
-
-    tree->Branch("vbs1_eta", &vbs1_eta);
-    tree->Branch("vbs1_pt", &vbs1_pt);
-	tree->Branch("vbs1_phi", &vbs1_phi);
-    tree->Branch("vbs2_eta", &vbs2_eta);
-    tree->Branch("vbs2_pt", &vbs2_pt);
-	tree->Branch("vbs2_phi", &vbs2_phi);    
-
-	tree->Branch("b1_eta", &b1_eta);
+    tree->Branch("j1_pt", &j1_pt);
+    tree->Branch("j2_pt", &j2_pt);	
     tree->Branch("b1_pt", &b1_pt);
-	tree->Branch("b1_phi", &b1_phi);
-    tree->Branch("b2_eta", &b2_eta);
     tree->Branch("b2_pt", &b2_pt);
-	tree->Branch("b2_phi", &b2_phi);
 
-	tree->Branch("mvbs", &mvbs);
-	tree->Branch("vbs_pt", &vbs_pt);
-	tree->Branch("vbs_Et", &vbs_Et);
+	tree->Branch("mjj", &mjj);
+	tree->Branch("j_pt", &j_pt);
+	tree->Branch("j_Et", &j_Et);
 	tree->Branch("mww", &mww);
 	tree->Branch("ww_pt", &ww_pt);
+	tree->Branch("ww_Et", &ww_Et);
 	tree->Branch("mbb", &mbb);
 	tree->Branch("bb_pt", &bb_pt);
 	tree->Branch("bb_Et", &bb_Et);
+	
 	tree->Branch("Ht", &Ht);
 	tree->Branch("Htnu", &Htnu);
 	tree->Branch("Ptm", &Ptm);
 
+	tree->Branch("deltaphi_bb", &deltaphi_bb);
+	tree->Branch("deltaphi_ljj", &deltaphi_ljj);
+	tree->Branch("deltaphi_bbljj", &deltaphi_bbljj);
+
+	tree->Branch("deltar_bb", &deltar_bb);
+	tree->Branch("deltar_ljj", &deltar_ljj);
+	tree->Branch("deltar_bbljj", &deltar_bbljj);
 	
     long iEv = 0;
 	int tau = 0;
@@ -94,12 +93,12 @@ int main(int argc, char** argv){
 			vector<int> quarks_b; 
             vector<int> jets;
             
-            //TlorentVector of vbs and bosons w
-            TLorentzVector jet_vbs1_mom, jet_vbs2_mom, jet_w1_mom;
+            //TlorentVector of j and bosons w
+            TLorentzVector jet_j1_mom, jet_j2_mom, w1_mom;
             //TlorentVector of lepton and neutrino
             TLorentzVector lep_mom, nu_mom; 
 			//TlorentVector of quarks beauty and antibeauty
-            TLorentzVector b1_mom, b2_mom; 
+            TLorentzVector b1_mom, b2_mom, bb_mom; 
             
             //Save quadrimomentum of all particles mapped with position in the event
             map<int, TLorentzVector> momenta;
@@ -175,38 +174,49 @@ int main(int argc, char** argv){
 			// mass and pt of the two beauty           
 			mbb = ( b1_mom + b2_mom ).M();
 			bb_pt = ( b1_mom + b2_mom ).Pt();
-			bb_Et = ( b1_mom + b2_mom ).Et();    
+			bb_Et = ( b1_mom + b2_mom ).Et();    			
         
-            // The vbs jet are saved looking at the element of the jet vector.
+            // The j jet are saved looking at the element of the jet vector.
 			// // Events with a DOUBLE JETS or NO JET are not saved.   
 			if(jets.size() > 0 && jets.size() < 3 && tau == 0){      
             	for (int i=0; i<jets.size(); i += 2){
-                       	jet_vbs1_mom = momenta[jets[i]];
-                      	jet_vbs2_mom = momenta[jets[i+1]];
-						vbs1_pt = jet_vbs1_mom.Pt();
-            			vbs1_eta = jet_vbs1_mom.Eta();
-						vbs1_phi = jet_vbs1_mom.Phi();
-           				vbs2_pt = jet_vbs2_mom.Pt();
-            			vbs2_eta = jet_vbs2_mom.Eta();
-						vbs2_phi = jet_vbs2_mom.Phi();						
-						mvbs = (jet_vbs1_mom + jet_vbs2_mom).M();
-           				vbs_pt = (jet_vbs1_mom + jet_vbs2_mom).Pt();
-						vbs_Et = (jet_vbs1_mom + jet_vbs2_mom).Et();
+                       	jet_j1_mom = momenta[jets[i]];
+                      	jet_j2_mom = momenta[jets[i+1]];
+						j1_pt = jet_j1_mom.Pt();
+            			j1_eta = jet_j1_mom.Eta();
+						j1_phi = jet_j1_mom.Phi();
+           				j2_pt = jet_j2_mom.Pt();
+            			j2_eta = jet_j2_mom.Eta();
+						j2_phi = jet_j2_mom.Phi();						
+						mjj = (jet_j1_mom + jet_j2_mom).M();
+           				j_pt = (jet_j1_mom + jet_j2_mom).Pt();
+						j_Et = (jet_j1_mom + jet_j2_mom).Et();
 
 						//bosons mass and momentum, the neutrinos are not measured  
-            			mww = ( jet_vbs1_mom + jet_vbs2_mom + lep_mom ).M();
-						ww_pt = ( jet_vbs1_mom + jet_vbs2_mom + lep_mom ).Pt();
+            			mww = ( jet_j1_mom + jet_j2_mom + lep_mom ).M();
+						ww_pt = ( jet_j1_mom + jet_j2_mom + lep_mom ).Pt();
 
 						//flavour of jets are saved in an histogram
 						q1->Fill(reader.hepeup.IDUP.at(jets[i]));
             			q2->Fill(reader.hepeup.IDUP.at(jets[i+1]));
 						
 						// saving Ht, Htnu, Ptm
-						Ht = b1_pt + b2_pt + vbs1_pt + vbs2_pt + lep_pt;
-						Htnu = b1_pt + b2_pt + vbs1_pt + vbs2_pt + lep_pt + n_pt;  
-						Ptm = ( b1_mom + b2_mom + jet_vbs1_mom + jet_vbs2_mom + lep_mom ).Pt();  
+						Ht = b1_pt + b2_pt + j1_pt + j2_pt + lep_pt;
+						Htnu = b1_pt + b2_pt + j1_pt + j2_pt + lep_pt + n_pt;  
+						Ptm = ( b1_mom + b2_mom + jet_j1_mom + jet_j2_mom + lep_mom ).Pt();
+
+						//Angolar variables 
+						deltaphi_bb = b1_mom.DeltaPhi( b2_mom );
+						deltar_bb = b1_mom.DeltaR( b2_mom );
+						deltaphi_ljj = lep_mom.DeltaPhi( jet_j1_mom + jet_j2_mom );
+						deltar_ljj = lep_mom.DeltaR( jet_j1_mom + jet_j2_mom );
+
+						bb_mom = b1_mom + b2_mom;
+						w1_mom = jet_j1_mom + jet_j2_mom; 
+						deltaphi_bbljj = bb_mom.DeltaPhi( lep_mom + w1_mom);
+						deltar_bbljj = bb_mom.DeltaR( lep_mom + w1_mom);
 						tree->Fill();
-                 }//vend of jet construction 
+                 }//end of jet construction 
 			}else{
 //			cout << "Event " << iEv << " is not saved. " << endl;
 			tau = 0; 
