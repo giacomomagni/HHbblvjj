@@ -31,7 +31,6 @@ void histo_cutmass( TTree * tree_s, TTree * tree_b, TH1D * hs,  TH1D * hb, strin
 	// -- mww < 125 [GeV]/c^2
 	// -- 120 < mbb < 125 [GeV]/c^2
 	//Gli eventi sono poi divisi in due categorie: mjj <= 50 e mjj > 50 [GeV]/c^2
-	// -- DeltaR_ljj < 0.9
 	//Vengono studiati GLI EVENTI A MASSA MJJ ALTA ( entambi i W on-Shell ) 
 	//Viene poi fatto un istogramma della pdf di ogni variabile scelta
  
