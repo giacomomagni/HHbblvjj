@@ -139,8 +139,8 @@ void ToyMC( string var ){
 	//Dal TTree del background vengono selezionati gli eventi con:  
 	// -- mww < 125 [GeV]/c^2
 	// -- 120 < mbb < 125 [GeV]/c^2
-	//Gli eventi sono poi divisi in due categorie: mvbs <= 50 e mvbs > 50 [GeV]/c^2
-	//Vengono studiati GLI EVENTI A MASSA MVBS ALTA ( entambi i W on-Shell ) 
+	//Gli eventi sono poi divisi in due categorie: mjj <= 50 e mjj > 50 [GeV]/c^2
+	//Vengono studiati GLI EVENTI A MASSA Mjj ALTA ( entambi i W on-Shell ) 
 	//Viene poi fatto un istogramma della pdf di ogni variabile scelta
  
 	TTreeReader reader_s( signal );
