@@ -12,7 +12,10 @@ R and Phi angles analyzed:
 - Signal purity: purity = (1-S_sx)*N_s / ( (1-S_sx)*N_s + B_dx*N_b )
 Note: S_sx cdf_signal(0,x)
       B_dx cdf_background(inf, x)
-
+      
 Two cuts may be proposed: 
   - deltaR bbar_lepjj > 2.85
   - deltaR lep_jj < 0.9 
+
+PS: the code of this folder are referred to an old version of the root files. 
+    The angular variables are stored directly in the new trees
