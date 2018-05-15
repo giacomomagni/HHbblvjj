@@ -86,7 +86,7 @@ int main(int argc, char** argv){
 	//N = numero di grandezze prese in cosiderazione
 	int N = 3;
 	string * var = new string [N] {  
-				"mbb",  "mvbs", "mww"
+				"mbb",  "mjj", "mww"
 	}; 
 
 	//MASS  
