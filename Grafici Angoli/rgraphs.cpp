@@ -28,6 +28,7 @@ void setstack(TH1D * hs, TH1D * hb, THStack * stack ){
     hs->SetFillColor(2);
 	hb->SetFillColor(4);
 	hs->SetLineColor(2);
+	
 	hb->SetLineColor(4);	
 	stack->Add(hs, "S");
 	stack->Add(hb, "S");
@@ -129,8 +130,8 @@ int main(int argc, char** argv){
 	//Dal TTree del background vengono selezionati gli eventi con:  
 	// -- mww < 125 [GeV]/c^2
 	// -- 120 < mbb < 125 [GeV]/c^2
-	//Gli eventi sono poi divisi in due categorie: mvbs <= 50 e mvbs > 50 [GeV]/c^2
-	//Vengono studiati gli eventi a mvbs alta.
+	//Gli eventi sono poi divisi in due categorie: mjj<= 50 e mjj > 50 [GeV]/c^2
+	//Vengono studiati gli eventi a mjj alta.
 	//Viene poi fatto un istogramma della pdf di ogni variabile scelta
  
 	TTreeReader reader_s( signal );
@@ -138,41 +139,41 @@ int main(int argc, char** argv){
 
 	TTreeReaderValue<double> mbb(reader_b, "mww"); 
 	TTreeReaderValue<double> mww(reader_b, "mbb"); 
-	TTreeReaderValue<double> mvbs_b(reader_b, "mvbs");
+	TTreeReaderValue<double> mjj_b(reader_b, "mjj");
 	TTreeReaderValue<double>  b1_phi_b( reader_b, "b1_phi");
 	TTreeReaderValue<double>  b2_phi_b( reader_b, "b2_phi");
-	TTreeReaderValue<double>  vbs1_phi_b( reader_b, "vbs1_phi");
-	TTreeReaderValue<double>  vbs2_phi_b( reader_b, "vbs2_phi");
+	TTreeReaderValue<double>  j1_phi_b( reader_b, "j1_phi");
+	TTreeReaderValue<double>  j2_phi_b( reader_b, "j2_phi");
 	TTreeReaderValue<double>  lep_phi_b( reader_b, "lep_phi");
 	TTreeReaderValue<double>  b1_eta_b( reader_b, "b1_eta");
 	TTreeReaderValue<double>  b2_eta_b( reader_b, "b2_eta");
-	TTreeReaderValue<double>  vbs1_eta_b( reader_b, "vbs1_eta");
-	TTreeReaderValue<double>  vbs2_eta_b( reader_b, "vbs2_eta");
+	TTreeReaderValue<double>  j1_eta_b( reader_b, "j1_eta");
+	TTreeReaderValue<double>  j2_eta_b( reader_b, "j2_eta");
 	TTreeReaderValue<double>  lep_eta_b( reader_b, "lep_eta");
 
-	TTreeReaderValue<double> mvbs_s(reader_s, "mvbs");
+	TTreeReaderValue<double> mjj_s(reader_s, "mjj");
 	TTreeReaderValue<double>  b1_phi_s( reader_s, "b1_phi");
 	TTreeReaderValue<double>  b2_phi_s( reader_s, "b2_phi");
-	TTreeReaderValue<double>  vbs1_phi_s( reader_s, "vbs1_phi");
-	TTreeReaderValue<double>  vbs2_phi_s( reader_s, "vbs2_phi");
+	TTreeReaderValue<double>  j1_phi_s( reader_s, "j1_phi");
+	TTreeReaderValue<double>  j2_phi_s( reader_s, "j2_phi");
 	TTreeReaderValue<double>  lep_phi_s( reader_s, "lep_phi");
 	TTreeReaderValue<double>  b1_eta_s( reader_s, "b1_eta");
 	TTreeReaderValue<double>  b2_eta_s( reader_s, "b2_eta");
-	TTreeReaderValue<double>  vbs1_eta_s( reader_s, "vbs1_eta");
-	TTreeReaderValue<double>  vbs2_eta_s( reader_s, "vbs2_eta");
+	TTreeReaderValue<double>  j1_eta_s( reader_s, "j1_eta");
+	TTreeReaderValue<double>  j2_eta_s( reader_s, "j2_eta");
 	TTreeReaderValue<double>  lep_eta_s( reader_s, "lep_eta");
 	
 	
 
 	//Selezione eventi backgrond e scrittura degli istogrammi 
 	while ( reader_b.Next() ) {
-		if ( * mww <= 125. && * mbb >= 120. && * mbb <= 130. && * mvbs_b >= 50.){				
+		if ( * mww <= 125. && * mbb >= 120. && * mbb <= 130. && * mjj_b >= 50.){				
 			double deltaphi_bb = abs( * b1_phi_b - *  b2_phi_b );
-			double deltaphi_lj = abs( ( * vbs1_phi_b + *  vbs2_phi_b ) * 0.5 - * lep_phi_b );
-			double deltaphi_wb = abs( (( * vbs1_phi_b + *  vbs2_phi_b ) * 0.5 + * lep_phi_b )*0.5 - (* b1_phi_b + *  b2_phi_b)*0.5 );
+			double deltaphi_lj = abs( ( * j1_phi_b + *  j2_phi_b ) * 0.5 - * lep_phi_b );
+			double deltaphi_wb = abs( (( * j1_phi_b + *  j2_phi_b ) * 0.5 + * lep_phi_b )*0.5 - (* b1_phi_b + *  b2_phi_b)*0.5 );
 			double deltaeta_bb = abs( * b1_eta_b - *  b2_eta_b );
-			double deltaeta_lj = abs( ( * vbs1_eta_b + *  vbs2_eta_b ) * 0.5 - * lep_eta_b );
-			double deltaeta_wb = abs( (( * vbs1_eta_b + *  vbs2_eta_b ) * 0.5 + * lep_eta_b )*0.5 - (* b1_eta_b + *  b2_eta_b)*0.5 );
+			double deltaeta_lj = abs( ( * j1_eta_b + *  j2_eta_b ) * 0.5 - * lep_eta_b );
+			double deltaeta_wb = abs( (( * j1_eta_b + *  j2_eta_b ) * 0.5 + * lep_eta_b )*0.5 - (* b1_eta_b + *  b2_eta_b)*0.5 );
 			if (deltaphi_bb > TMath::Pi()) deltaphi_bb = TMath::TwoPi()-deltaphi_bb;
 			if (deltaphi_lj > TMath::Pi()) deltaphi_lj = TMath::TwoPi()-deltaphi_lj;
 			if (deltaphi_wb > TMath::Pi()) deltaphi_wb = TMath::TwoPi()-deltaphi_wb;
@@ -187,13 +188,13 @@ int main(int argc, char** argv){
 	}	
 	//Scrittura degli istogrammi del segnale
 	while ( reader_s.Next() ) {
-		if ( * mvbs_s >= 50.){
+		if ( * mjj_s >= 50.){
 			double deltaphi_bb = abs( * b1_phi_s - *  b2_phi_s );
-			double deltaphi_lj = abs( ( * vbs1_phi_s + *  vbs2_phi_s ) * 0.5 - * lep_phi_s );
-			double deltaphi_wb = abs( (( * vbs1_phi_s + *  vbs2_phi_s ) * 0.5 + * lep_phi_s )*0.5 - (* b1_phi_s + *  b2_phi_s)*0.5 );
+			double deltaphi_lj = abs( ( * j1_phi_s + *  j2_phi_s ) * 0.5 - * lep_phi_s );
+			double deltaphi_wb = abs( (( * j1_phi_s + *  j2_phi_s ) * 0.5 + * lep_phi_s )*0.5 - (* b1_phi_s + *  b2_phi_s)*0.5 );
 			double deltaeta_bb = abs( * b1_eta_s - *  b2_eta_s );
-			double deltaeta_lj = abs( ( * vbs1_eta_s + *  vbs2_eta_s ) * 0.5 - * lep_eta_s );
-			double deltaeta_wb = abs( (( * vbs1_eta_s + *  vbs2_eta_s ) * 0.5 + * lep_eta_s )*0.5 - (* b1_eta_s + *  b2_eta_s)*0.5 );
+			double deltaeta_lj = abs( ( * j1_eta_s + *  j2_eta_s ) * 0.5 - * lep_eta_s );
+			double deltaeta_wb = abs( (( * j1_eta_s + *  j2_eta_s ) * 0.5 + * lep_eta_s )*0.5 - (* b1_eta_s + *  b2_eta_s)*0.5 );
 			if (deltaphi_bb >= TMath::Pi()) deltaphi_bb = TMath::TwoPi()-deltaphi_bb;
 			if (deltaphi_lj >= TMath::Pi()) deltaphi_lj = TMath::TwoPi()-deltaphi_lj;
 			if (deltaphi_wb >= TMath::Pi()) deltaphi_wb = TMath::TwoPi()-deltaphi_wb;
