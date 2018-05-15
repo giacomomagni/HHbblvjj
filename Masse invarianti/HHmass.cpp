@@ -47,10 +47,8 @@ void DrawHisto	(TTree * signal, TTree * background, string var){
 
 	TTreeReaderValue<double> mbb_b(reader_b, "mww"); 
 	TTreeReaderValue<double> mww_b(reader_b, "mbb"); 
-	TTreeReaderValue<double> mvbs_b(reader_b, "mvbs");
 	TTreeReaderValue<double> mbb_s(reader_s, "mww"); 
 	TTreeReaderValue<double> mww_s(reader_s, "mbb"); 
-	TTreeReaderValue<double> mvbs_s(reader_s, "mvbs");
 
 	int nbin = 100;
 	double min = 0, max = 800;
