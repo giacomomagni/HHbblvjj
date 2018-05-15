@@ -147,8 +147,8 @@ void ToyMC( string var ){
 	TTreeReader reader_b( background );
 	TTreeReaderValue<double> mbb(reader_b, "mww"); 
 	TTreeReaderValue<double> mww(reader_b, "mbb"); 
-	TTreeReaderValue<double> mvbs_b(reader_b, "mvbs");
-	TTreeReaderValue<double> mvbs_s(reader_s, "mvbs");
+	TTreeReaderValue<double> mjj_b(reader_b, "mjj");
+	TTreeReaderValue<double> mjj_s(reader_s, "mjj");
 	TTreeReaderValue<double>  variable_b( reader_b, var.c_str());
 	TTreeReaderValue<double>  variable_s( reader_s, var.c_str());
 
@@ -157,7 +157,7 @@ void ToyMC( string var ){
 	//Selezione eventi backgrond e scrittura degli istogrammi 
 	while ( reader_b.Next() ) {
 		tot_ev++;
-		if ( * mww <= 125. && * mbb >= 120. && * mbb <= 130. && * mvbs_b >= 50.){
+		if ( * mww <= 125. && * mbb >= 120. && * mbb <= 130. && * mjj_b >= 50.){
 			hb->Fill( log(* variable_b) );
 			b_ev++;
 		}
@@ -167,7 +167,7 @@ void ToyMC( string var ){
 	//Scrittura degli istogrammi del segnale
 	while ( reader_s.Next() ) {
 		tot_ev += 1 ;	
-		if ( * mvbs_s >= 50.){
+		if ( * mjj_s >= 50.){
 			hs->Fill( log(* variable_s) );
 			s_ev ++;						
 		}
