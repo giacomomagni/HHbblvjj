@@ -103,7 +103,7 @@ void toymc( string var  ){
     tot_ev=0;
     //Scrittura degli istogrammi del segnale
     while ( reader_s.Next() ) {
-        tot_ev += 1 ;   
+        tot_ev ++;   
         if ( * mjj_s >= 50.){
             if(logscale == 1){ 
                 hs->Fill( log(* variable_s) );
@@ -163,9 +163,10 @@ void toymc( string var  ){
         cout<< "------------------------------------------------------------" << endl
             << "Luminosity: " << lum[i] << " fb^-1" << endl
             << "Type the number of MC simulation: "; cin >> Nsim;
- 
+     
+        //All'interno di histo_Ns vengono salvati gli Ns di ciascuna simulazione
         string title4 = "Signal events simulated at luminosity " + to_string(lum[i]) + " fb^-1";
-        TH1D * histo_Ns = new TH1D(title4.c_str(), title4.c_str(), 100, 0, 10*evs_exp);
+        TH1D * histo_Ns = new TH1D(title4.c_str(), title4.c_str(), 100, 0, 3*evs_exp);
         TF1 * f = new TF1("f", "gaus", 0, 3*evs_exp);
          
         for(int k=1; k <= Nsim; k++ ){
@@ -209,8 +210,6 @@ void toymc( string var  ){
         gr->SetPointError(i, 0.0, Ns_avg_err );
         gr_exp->SetPoint(i, lum[i],  evs_exp );
         gr_exp->SetPointError(i, 0.0, 0.01*evs_exp );
-         
-   		cout<< "Relative uncertainty on N_signal: " << Ns_avg_err/Ns_avg*100 <<" %" <<endl;
     }
     string title6 = var + " Simulated Ns_frequency.png";
     can1->Print( title6.c_str() );
