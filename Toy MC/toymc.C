@@ -1,6 +1,5 @@
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
-#include "TApplication.h"
 #include "TRandom3.h"
  
 using namespace std;
@@ -174,7 +173,7 @@ void toymc( string var  ){
             string title5 = "Background + Signal at luminosity " + to_string(lum[i]) + " fb^-1" + to_string(k);
             TH1D * bs = new TH1D(title5.c_str(), title5.c_str() , nbin, min, max );
  
-            //gRandom->SetSeed(0);
+            gRandom->SetSeed(0);
             bs->FillRandom( "pdf_funzb", evb_exp );
             bs->FillRandom( "pdf_funzs", evs_exp );
          
@@ -211,7 +210,7 @@ void toymc( string var  ){
         gr_exp->SetPoint(i, lum[i],  evs_exp );
         gr_exp->SetPointError(i, 0.0, 0.01*evs_exp );
          
-        //cout<< "Relative uncertainty on N_signal: " << funz_bs->GetParError(0)/funz_bs->GetParameter(0)*100 <<" %" <<endl;
+   		cout<< "Relative uncertainty on N_signal: " << Ns_avg_err/Ns_avg*100 <<" %" <<endl;
     }
     string title6 = var + " Simulated Ns_frequency.png";
     can1->Print( title6.c_str() );
