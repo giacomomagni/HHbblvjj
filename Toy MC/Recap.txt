@@ -19,8 +19,8 @@ Calulation of epected N_s and N_b
  			H H 			33.5 fb
 	>>Branching ratios:
 			The Branching ratio for each decay in the signal is: 
- 				H >> b bbar							58.24+-0.38	%	(B1)			
- 				H >> W W								21.37+-0.21	%	(B2)
+ 				H >> b bbar							58.24+-0.38	%	(B1)		 		
+				H >> W W							21.37+-0.21	%	(B2)
  				W >> q1 q2							67.60+-0.27	%	(B3)
  				W >> l nu	(only e- e+ mu- mu+)	21.32+-0.19	%	(B4)
 			The total branching ratio for the signal event is given by the product 2*(B1*B2)*2*(B3*B4):
