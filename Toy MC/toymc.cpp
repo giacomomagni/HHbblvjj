@@ -1,57 +1,8 @@
-//Exepected N_s (number of signal event) and N_b (number of background event)
-//
-// -- Selection of events with cuts on invariant masses
-// -- pdf(x) and fit with gamma distriburion
-// -- Generation of new events with a MonteCarlo method and plot in a histo Signal+Background
-//		>>four different values of integrated luminosity:
-//			-- 100 fb^-1  actual luminosity 
-//			-- 150 fb^-1  end of 2018
-// 			-- 300 fb^-1  end of 2nd LHC run
-// 			-- 3000 fb^-1 high-luminosity LHC
-// 		>>cross section  at E = 13 TeV:
-// 			t tbar		831.76*10e^3 fb
-// 			H H 			33.5 fb
-//		>>Branching ratios:
-// 			The Branching ratio for each decay in the signal is: 
-// 				H >> b bbar							58.24+-0.38	%	(B1)			
-// 				H >> W W								21.37+-0.21	%	(B2)
-// 				W >> q1 q2							67.60+-0.27	%	(B3)
-// 				W >> l nu	(only e- e+ mu- mu+)	21.32+-0.19	%	(B4)
-//			The total branching ratio for the signal event is given by the product 2*(B1*B2)*2*(B3*B4):
-//				H H >> b bbar q1 q2 l+ nu OR b bbar q3 q4 l- nu			7.17+-0.11	%
-//		
-//			The Branching ratio for each decay in the backgroung is: 
-// 				t >> b W								91+-4	%	(B1)			
-// 				W >> q1 q2							67.60+-0.27	%	(B2)
-// 				W >> l nu	(only e- e+ mu- mu+)	21.32+-0.19	%	(B3)
-//			The total branching ratio for the background is given by the product B1^2*2*(B2*B3):
-// 				t tbar >> b bbar q1 q2 l+ nu OR b bbar q3 q4 l- nu		23.86+-1.7	%	
-//
-//	-- Fit polinomiale of the new histo with F(N_s, N_b, x) = N_s*pfd_s(x)+N_b*pfd_b(x)
-// 	-- Evaluate N_s and N_b exepected
 
-// c++ -o toymc toymc.cpp `root-config --cflags --glibs`
-//./toymc q1 q2...
-
-#include <iostream>
-#include <TH1D.h>
-#include <TCanvas.h>
-#include "TFile.h"
-#include "TTree.h"
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
-#include <TStyle.h>
-#include <THStack.h>
-#include <TLegend.h>
-#include <TMath.h>
-#include <TF1.h>
-#include <TGraphErrors.h>
-#include <TMultiGraph.h>
-#include <TRandom.h>
-#include <TPaveStats.h>
-#include <TApplication.h>
-#include <fstream>
-
+#include "TApplication.h"
+#include "TRandom3.h"
 
 using namespace std;
 //cross sections
@@ -61,7 +12,8 @@ using namespace std;
 #define br_s 0.0717
 #define br_b 0.238
 
-void setstack(TH1D * hs, TH1D * hb, THStack * stack ){	
+void setstack(TH1D * hs, TH1D * hb, THStack * stack ){
+	gStyle->SetOptFit(1111);	
 	hb->SetFillStyle(3003);
 	hs->SetFillStyle(3004);
     hs->SetFillColor(2);
@@ -87,52 +39,38 @@ void setstack(TH1D * hs, TH1D * hb, THStack * stack ){
 	return;
 }
 
-void setstack1(TH1D * hs, TH1D * hb, THStack * stack ){	
-	gStyle->SetOptStat(0000);
-	gStyle->SetOptFit(1111);
-	hb->SetFillStyle(3003);
-	hs->SetFillStyle(3004);
-    hs->SetFillColor(2);
-	hb->SetFillColor(4);
-	hs->SetLineColor(2);
-	hb->SetLineColor(4);	
-	stack->Add(hs, "S");
-	stack->Add(hb, "S");
-    stack->Draw("nostack");
-	gPad->SetGrid(1,1);		
-	TLegend *legend1 = new TLegend(0.8,0.2,0.98,0.38);
-    legend1->AddEntry(hs,"Signal", "f");
-    legend1->AddEntry(hb,"Background +Signal", "f");
-    legend1->Draw("SAME");
-	gPad->Update();
-	TPaveStats * sb = (TPaveStats * )(hb->GetListOfFunctions()->FindObject("stats"));
-	sb->SetX1NDC(.55);	sb->SetX2NDC(0.98);	sb->SetY1NDC(.4);	sb->SetY2NDC(.9);
-	sb->SetTextColor(1);
-	gPad->Modified();
-	return;
-}
+void toymc( string var  ){	
+	
+	if(gRandom) delete gRandom;
+	gRandom = new TRandom3(0);
 
-void ToyMC( string var ){	
+	int nbin, dof;
+	double min, max;
+	bool correct = 1;
+	bool logscale = 1;
 
 	//INSERIRE RANGE in CUI GENERARE EVENTI 
-	double min, max;
-	int nbin, dof;
-	cout << "Inserire range in cui generare i nuovi eventi di: " << var <<endl;
+	cout << "------------------------------------------------------------" << endl
+		 << "Type the MC simulation range of the variable: " << var <<endl;
+	cout << "Log scale? [Yes type 1, No type 0]: "; cin >> logscale; 
 	cout << "Min: "; cin >> min;
 	cout << "Max: "; cin >> max;
 	cout << "Nbin: "; cin >> nbin; 
-	cout << "Polinomial degree: "; cin >> dof;
 
+	double binsize = abs(max-min)/nbin;
 
+//	min=0; max=4.5; nbin=67; dof=8;
 	//ISTOGRAMMI DELLE DISTIBUZIONI	
     TFile * sinput = TFile::Open( "HH.root" );
     TFile * binput = TFile::Open( "ttbar.root" );
     TTree * signal  = (TTree*)sinput->Get("tree");
     TTree * background  = (TTree*)binput->Get("tree");
+	string title0 = "Pdf distribution of " + var;
 	string title1 = "Background_" + var;
 	string title2 = "Signal_" + var;
-	TCanvas * can = new TCanvas( "can" , "pdf lhe files");
-	THStack * dist = new THStack("dist", var.c_str() );
+
+	TCanvas * can = new TCanvas( "can" , title0.c_str() );
+	THStack * dist = new THStack("dist", title0.c_str() );
 	TH1D * hs = new TH1D( title2.c_str(), "Signal", nbin,min,max);
 	TH1D * hb = new TH1D( title1.c_str(), "Background", nbin,min,max); 
 
@@ -140,7 +78,7 @@ void ToyMC( string var ){
 	// -- mww < 125 [GeV]/c^2
 	// -- 120 < mbb < 125 [GeV]/c^2
 	//Gli eventi sono poi divisi in due categorie: mjj <= 50 e mjj > 50 [GeV]/c^2
-	//Vengono studiati GLI EVENTI A MASSA Mjj ALTA ( entambi i W on-Shell ) 
+	//Vengono studiati GLI EVENTI A MASSA mjj ALTA ( entambi i W on-Shell ) 
 	//Viene poi fatto un istogramma della pdf di ogni variabile scelta
  
 	TTreeReader reader_s( signal );
@@ -158,7 +96,11 @@ void ToyMC( string var ){
 	while ( reader_b.Next() ) {
 		tot_ev++;
 		if ( * mww <= 125. && * mbb >= 120. && * mbb <= 130. && * mjj_b >= 50.){
-			hb->Fill( log(* variable_b) );
+			if(logscale == 1){ 
+				hb->Fill( log(* variable_b) );
+			}else{
+				hb->Fill( * variable_b);
+			}
 			b_ev++;
 		}
 	}
@@ -168,7 +110,11 @@ void ToyMC( string var ){
 	while ( reader_s.Next() ) {
 		tot_ev += 1 ;	
 		if ( * mjj_s >= 50.){
-			hs->Fill( log(* variable_s) );
+			if(logscale == 1){ 
+				hs->Fill( log(* variable_s) );
+			}else{
+				hs->Fill( * variable_s);
+			}
 			s_ev ++;						
 		}
 	}
@@ -181,105 +127,157 @@ void ToyMC( string var ){
    		hs->SetBinContent(j, hs->GetBinContent(j)/Ns);
 		hb->SetBinContent(j, hb->GetBinContent(j)/Nb);
 	}
-
-	//FIT DELLA PDF viene usata una distribuzione Gamma
+//	cout<<hs->Integral() << endl;
+	//FIT DELLA PDF viene usata una distribuzione polinomiale
+	cout << "Fit polinomial degree: "; cin >> dof;
 	TF1 * pdf_funzs = new TF1("pdf_funzs", Form("abs(pol%i)", dof), min, max);
 	TF1 * pdf_funzb = new TF1("pdf_funzb", Form("abs(pol%i)", dof), min, max );
 	pdf_funzs->SetLineColor(2);
 	pdf_funzb->SetLineColor(4);
-	hs->Fit("pdf_funzs", "RQ");
-	hb->Fit("pdf_funzb", "RQ");
+	hs->Fit("pdf_funzs", "RQLEM");
+	hb->Fit("pdf_funzb", "RQLEM");
 	setstack( hs, hb, dist);
+	dist->GetXaxis()->SetTitle( var.c_str() );
+	dist->GetYaxis()->SetTitle("dN/dx");	
+	can->Modified();
+	can->Update();
+	string name = var + ".png";
+//	can->Print( name.c_str() );
+
+//	cout<< "Is the fit correct? [type 0 to exit, 1 to continue]: ";	cin >> correct;
+//	if( correct == 0) return;		
 
 	//GENERAZIONE DEI NUOVI VALORI CON METODO MC
-	// PLOT DEL NUOVO HISTO S+B al variariare della luminosità int
-	// FIT con funzione S+B
-	//GRAFICO ERRORE RELATIVO N_s(LUMINOSITY)
+	//GRAFICO ERRORE RELATIVO N_s vs LUMINOSITY
 
 	double lum [4] = { 375., 750., 1500., 3000. };	
 //	double lum [4] = { 100., 150., 300., 3000. };	
-	TH1D ** bs = new TH1D * [4];
-	TH1D ** s = new TH1D * [4];
-	TCanvas ** c = new TCanvas * [4];
+
+	TCanvas * can1 = new TCanvas("can1", "N_s simulated distribution" );
+	can1->Divide(1,4);
 	TGraphErrors * gr = new TGraphErrors();
+	TGraphErrors * gr_b = new TGraphErrors();
 	TGraphErrors * gr_exp = new TGraphErrors();
+	TGraphErrors * gr_exp_b = new TGraphErrors();
 	TMultiGraph *mg = new TMultiGraph();
+	TMultiGraph *mg_b = new TMultiGraph();
 
+	// FIT con funzione S+B PER UN MUMERO DI Nsim VOLTE PER CIASCUNA LUMINOSITA'
+	for(int i=0; i<4; i++){
 
-	for(int i=0; i< 4; i++){
-		cout << "Luminosity: " << lum[i] << " fb^-1" << endl;
-		string title = "Background + Signal at luminosity " + to_string(lum[i]) + " fb^-1";
-		THStack * dist = new THStack("dist","Signal+Background");
-		c[i] = new TCanvas( Form("c%i", i) , title.c_str() );
-		bs[i] = new TH1D( title.c_str(), title.c_str() , nbin, min, max);
-		s[i] = new TH1D( Form("signal, %i",i), Form("signal, %i",i) , nbin, min, max);
-		double evs_exp = cr_s*br_s*lum[i]*evs_saved;
-		double evb_exp = cr_b*br_b*lum[i]*evb_saved;
+		int evs_exp = (int) cr_s*br_s*lum[i]*evs_saved;
+		int evb_exp = (int) cr_b*br_b*lum[i]*evb_saved;
+		int Nsim;
+		cout<< "------------------------------------------------------------" << endl
+			<< "Luminosity: " << lum[i] << " fb^-1" << endl
+			<< "Type the number of MC simulation: "; cin >> Nsim;
 
-		bs[i]->FillRandom( "pdf_funzb", evb_exp );
-		bs[i]->FillRandom( "pdf_funzs", evs_exp );
-		s[i]->FillRandom( "pdf_funzs",  evs_exp );
+		TVectorT<double> ns(Nsim);
+		TVectorT<double> nb(Nsim);
+		TF1 * f = new TF1("f", "gaus", 0, 3*evs_exp);
 		
-		string funz = Form("[0]*abs(pol%i(2))+[1]*abs(pol%i(%i))", dof, dof, dof+3);
-		TF1 * funz_bs = new TF1("funz_bs", funz.c_str() , min, max );
-		funz_bs->SetParameter(0, evs_exp);
-		funz_bs->SetParameter(1, evb_exp);
-		for (int j=2; j< dof+3; j++) 		funz_bs->SetParameter(j, pdf_funzs->GetParameter(j-2));
-		for (int j=dof+3; j<2*dof+4; j++) 	funz_bs->SetParameter(j, pdf_funzb->GetParameter(j-(dof+3)));
-		funz_bs->SetParName(0, "N_s");
-		funz_bs->SetParName(1, "N_b");
-		funz_bs->SetLineColor(4);
-		bs[i]->Fit("funz_bs", "QR");
+		for(int k=1; k <= Nsim; k++ ){
+			cout<<"I'm woking on simulation number: " << k <<endl;
+			string title5 = "Background + Signal at luminosity " + to_string(lum[i]) + " fb^-1" + to_string(k);	
+			TH1D * bs = new TH1D(title5.c_str(), title5.c_str() , nbin, min, max );
 	
-		setstack1( s[i], bs[i], dist );	
-		c[i]->SetLogy();
-		dist->SetTitle( title.c_str() );
-		dist->GetXaxis()->SetTitle( var.c_str() );
-		dist->GetYaxis()->SetTitle("dN/dx");	
+			gRandom->SetSeed(0);
+			//cout << evs_exp <<endl;
+			//cout<< evb_exp << endl;
+			bs->FillRandom( "pdf_funzs", evs_exp );	
+			bs->FillRandom( "pdf_funzb", evb_exp );
 
-		gr->SetPoint(i, lum[i], funz_bs->GetParameter(0) );
-		gr->SetPointError(i, 0.0, funz_bs->GetParError(0) );
+			string funz = Form("[0]*abs(pol%i(2))+[1]*abs(pol%i(%i))", dof, dof, dof+3);
+			TF1 * funz_bs = new TF1("funz_bs", funz.c_str() , min, max );
+			funz_bs->SetParameter(0, evb_exp);
+			funz_bs->SetParameter(1, evs_exp);
+
+			for (int j=2; j<dof+3; j++) 		funz_bs->FixParameter(j, pdf_funzb->GetParameter(j-2));
+			for (int j=dof+3; j<2*dof+4; j++) 	funz_bs->FixParameter(j, pdf_funzs->GetParameter(j-(dof+3)));
+			
+			bs->Fit("funz_bs", "QRLM");
+			//cout<< funz_bs->GetParameter(1)/binsize <<endl;
+			//cout<< funz_bs->GetParameter(0)/binsize <<endl;
+			ns[k-1] = funz_bs->GetParameter(1)/binsize;
+			nb[k-1] = funz_bs->GetParameter(0)/binsize;
+		}
+
+		
+		string title4 = "Signal events simulated at luminosity " + to_string(lum[i]) + " fb^-1";
+		string title6 = "Background events simulated at luminosity " + to_string(lum[i]) + " fb^-1";
+		TH1D * histo_Ns = new TH1D( title4.c_str(), title4.c_str(), Nsim, ns.Min(), ns.Max());
+		TH1D * histo_Nb = new TH1D( title6.c_str(), title6.c_str(), Nsim, nb.Min(), nb.Max());
+		for(int k=0; k< Nsim; k++){
+			histo_Ns->Fill( ns[k] );
+			histo_Nb->Fill( nb[k] );		
+		}
+		histo_Ns->GetXaxis()->SetTitle( "Simulated signal events" );
+		histo_Ns->GetYaxis()->SetTitle(	"Frequency [Events]");
+		histo_Ns->Fit("f", "Q");
+		double Ns_avg = f->GetParameter(1);
+		double Ns_avg_err = f->GetParameter(2);
+		
+		can1->cd(i+1);	 
+		histo_Ns->Draw();
+		can1->Modified();
+		can1->Update();
+
+		histo_Nb->Fit("f", "QN");
+		double Nb_avg = f->GetParameter(1);
+		double Nb_avg_err = f->GetParameter(2);
+		
+		cout << "------------------------------------------------------------" << endl
+			 << "Expected signal events: " << evs_exp << endl
+			 << "Expected background events: " << evb_exp << endl
+			 << "Simulated signal events on average: " << Ns_avg <<  endl
+			 << "Relative error: " << Ns_avg_err/Ns_avg*100 << "%" << endl
+			 << "Simulated bg events on average: " << Nb_avg <<  endl;
+
+		gr->SetPoint(i, lum[i], Ns_avg );
+		gr->SetPointError(i, 0.0, Ns_avg_err );
+		gr_b->SetPoint(i, lum[i], Nb_avg );
+		gr_b->SetPointError(i, 0.0, Nb_avg_err );
 		gr_exp->SetPoint(i, lum[i],  evs_exp );
 		gr_exp->SetPointError(i, 0.0, 0.01*evs_exp );
+		gr_exp_b->SetPoint(i, lum[i],  evb_exp );
+		gr_exp_b->SetPointError(i, 0.0, 0.01*evb_exp );
 		
-		cout<< "Relative uncertainty on N_signal: " << funz_bs->GetParError(0)/funz_bs->GetParameter(0)*100 <<" %" <<endl;
+		//cout<< "Relative uncertainty on N_signal: " << funz_bs->GetParError(0)/funz_bs->GetParameter(0)*100 <<" %" <<endl;
 	}
+	string title6 = var + " Simulated Ns_frequency.png";
+//	can1->Print( title6.c_str() );
 
-	//Disegno del grafico
-	
-	
-	TCanvas * c5 = new TCanvas("c5", "N_s vs luminosity");
+	//Disegno del grafico N_s vs luminosity
+	TCanvas * can2 = new TCanvas("can2", "N_s vs luminosity");
 	mg->SetTitle("N_signal vs Luminosity; Luminosity [fb^-1]; N_s");
+	gStyle->SetOptFit(0000);
 	gPad->SetGrid(1,1);
 	gr->SetMarkerStyle(20);
 	gr->SetMarkerSize(0.7);
 	gr->Fit("pol1", "Q");
 	gr_exp->SetMarkerStyle(2);
-	gr_exp->SetMarkerSize(2);
+	gr_exp->SetMarkerSize(3);
 	gr_exp->SetMarkerColor(4);
 	mg->Add( gr_exp );
 	mg->Add( gr );
 	mg->Draw("AP");
-	
+	string title7 = var + " N_signal_luminostiy.png";
+	can2->Print( title7.c_str() );
+
+	TCanvas * can3 = new TCanvas("can3", "N_b vs luminosity");
+	mg_b->SetTitle("N_backgruond vs Luminosity; Luminosity [fb^-1]; N_b");
+	gStyle->SetOptFit(0000);
+	gPad->SetGrid(1,1);
+	gr_b->SetMarkerStyle(20);
+	gr_b->SetMarkerSize(0.7);
+	gr_b->Fit("pol1", "Q");
+	gr_exp_b->SetMarkerStyle(2);
+	gr_exp_b->SetMarkerSize(3);
+	gr_exp_b->SetMarkerColor(4);
+	mg_b->Add( gr_exp );
+	mg_b->Add( gr );
+	mg_b->Draw("AP");
+	string title10 = var + " N_bg_luminostiy.png";
+	can2->Print( title10.c_str() );
 	return;
-}
-
-//La grandezza che è stata scelta per il toy MC va passata sulla riga di comando.
-//Per vedere i nomi con cui sono salvate nei TTree, consultare il file di lettura reading.cpp
-//Il programma chiede di inserire il range di ogni variabile. Le grandezze hanno  circa i seguenti range:
-//	var_Et: 0, 300
-//	var_pt:	0, 300
-//	Ht, Htnu: 120, 800
-//	Ptm: 0, 150
-
-int main(int argc, char** argv){
-    if (argc < 2){
-        cout << "Usage: " << argv[0] << " quantity " << endl;
-        return 1;
-    }
-	gRandom->SetSeed(0);
-	TApplication * Grafica = new TApplication("App", 0, 0);
-	ToyMC( argv[1] );
-	Grafica->Run();
-	return 0;
 }
