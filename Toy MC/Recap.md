@@ -21,13 +21,13 @@ Calulation of epected N_s and N_b
  				H >> b bbar							58.24+-0.38	%	(B1)		 		
 				H >> W W							21.37+-0.21	%	(B2)
  				W >> q1 q2							67.60+-0.27	%	(B3)
- 				W >> l nu	(only e- e+ mu- mu+)	21.32+-0.19	%	(B4)
+ 				W >> l nu	(only e- e+ mu- mu+)				21.32+-0.19	%	(B4)
 			The total branching ratio for the signal event is given by the product 2*(B1*B2)*2*(B3*B4):
 				H H >> b bbar q1 q2 l+ nu OR b bbar q3 q4 l- nu				7.17+-0.11	%
 			The Branching ratio for each decay in the backgroung is: 
  				t >> b W								91+-4	%	(B1)			
  				W >> q1 q2							67.60+-0.27	%	(B2)
- 				W >> l nu	(only e- e+ mu- mu+)	21.32+-0.19	%	(B3)
+ 				W >> l nu	(only e- e+ mu- mu+)				21.32+-0.19	%	(B3)
 			The total branching ratio for the background is given by the product B1^2*2*(B2*B3):
  				t tbar >> b bbar q1 q2 l+ nu OR b bbar q3 q4 l- nu		23.86+-1.7	%	
      4.Cut selection factors are computed when cut on masses are applied ( cut_s around 100%, cut_b around 0.6%)  
