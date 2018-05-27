@@ -1,4 +1,4 @@
-## Simulation parametes:
+## Simulation parameters:
 
   * no log scale
   
