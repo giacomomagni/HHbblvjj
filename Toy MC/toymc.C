@@ -160,7 +160,6 @@ void toymc( string var  ){
 	binput->Close();
 
 	//GENERAZIONE DEI NUOVI VALORI CON METODO MC
-	//GRAFICO ERRORE RELATIVO N_s vs LUMINOSITY
 
 	double lum [4] = { 375., 750., 1500., 3000. };	
 //	double lum [4] = { 100., 150., 300., 3000. };	
