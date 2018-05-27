@@ -49,7 +49,7 @@ void Draw_graph( string var ){
 	TCanvas ** c = new TCanvas * [4];
 	c[0] = new TCanvas("c0", "SM signal frequency"); 
 	c[0]->Divide(4,1);
-
+	
 	for(int i=0; i<4;i++){
 
 		c[0]->cd(i+1);
