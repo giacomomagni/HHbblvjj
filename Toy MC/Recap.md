@@ -7,17 +7,17 @@ Evaluation of relative uncertainty on N_s at different values of luminosity.
 
 Calulation of epected N_s and N_b 
   N = luminosity * cross section * branching ratios * cuts selection 
-  
-  >>four different values of integrated luminosity:
+  	
+	1. four different values of integrated luminosity:
     For ex:
 			-- 100 fb^-1  actual luminosity 
 			-- 150 fb^-1  end of 2018
 			-- 300 fb^-1  end of 2nd LHC run
  			-- 3000 fb^-1 high-luminosity LHC
-	>>cross section  at E = 13 TeV:
+	2.cross section  at E = 13 TeV:
 			t tbar		831.76*10e^3 fb
  			H H 			33.5 fb
-	>>Branching ratios:
+	3.Branching ratios:
 			The Branching ratio for each decay in the signal is: 
  				H >> b bbar							58.24+-0.38	%	(B1)		 		
 				H >> W W							21.37+-0.21	%	(B2)
@@ -33,4 +33,4 @@ Calulation of epected N_s and N_b
 			The total branching ratio for the background is given by the product B1^2*2*(B2*B3):
  				t tbar >> b bbar q1 q2 l+ nu OR b bbar q3 q4 l- nu		23.86+-1.7	%	
      
-     >>Cut selection factors are computed when cut on masses are applied ( cut_s around 50%, cut_b around 3%)  
+     4.Cut selection factors are computed when cut on masses are applied ( cut_s around 100%, cut_b around 0.6%)  
