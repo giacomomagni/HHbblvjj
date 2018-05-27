@@ -1,4 +1,3 @@
-
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include "TApplication.h"
@@ -26,7 +25,7 @@ void setstack(TH1D * hs, TH1D * hb, THStack * stack ){
     stack->Draw("nostack");
 	gPad->SetGrid(1,1);		
 	TLegend *legend = new TLegend(0.8,0.7,0.98,0.88);
-    legend->AddEntry(hs,"Signal", "f");
+   	legend->AddEntry(hs,"Signal", "f");
     legend->AddEntry(hb,"Background", "f");
     legend->Draw("SAME");
 	gPad->Update();
@@ -59,7 +58,7 @@ void toymc( string var  ){
 	cout << "Nbin: "; cin >> nbin; 
 
 	//ISTOGRAMMI DELLE DISTIBUZIONI	
-    TFile * sinput = TFile::Open( "HH.root" );
+    TFile * sinput = TFile::Open( "newHH.root" );
     TFile * binput = TFile::Open( "newttbar.root" );
     TTree * signal  = (TTree*)sinput->Get("tree");
     TTree * background  = (TTree*)binput->Get("tree");
@@ -74,10 +73,8 @@ void toymc( string var  ){
 
 	//Dal TTree del background vengono selezionati gli eventi con:  
 	// -- mww < 125 [GeV]/c^2
-	// -- 120 < mbb < 125 [GeV]/c^2
-	//Gli eventi sono poi divisi in due categorie: mjj <= 50 e mjj > 50 [GeV]/c^2
-	//Vengono studiati GLI EVENTI A MASSA mjj ALTA ( entambi i W on-Shell ) 
-	//Viene poi fatto un istogramma della pdf di ogni variabile scelta
+	// -- 124 < mbb < 126 [GeV]/c^2
+	//Viene poi fatto un istogramma della pdf variabile scelta
  
 	TTreeReader reader_s( signal );
 	TTreeReader reader_b( background );
@@ -95,7 +92,7 @@ void toymc( string var  ){
 	//Selezione eventi backgrond e scrittura degli istogrammi 
 	while ( reader_b.Next() ) {
 		tot_ev++;
-		if ( * mww <= 125. && * mbb >= 124. && * mbb <= 126. /*&& abs(* deltaphi_bbljj_b) >= 2.*/){
+		if ( * mww <= 125. && * mbb >= 124 && * mbb <= 126 ){
 			if(logscale == 1){ 
 				hb->Fill( log(* variable_b) );
 			}else{
@@ -109,20 +106,16 @@ void toymc( string var  ){
 	//Scrittura degli istogrammi del segnale
 	while ( reader_s.Next() ) {
 		tot_ev += 1 ;	
-		//if ( abs(* deltaphi_bbljj_s)>=2 ){
 			if(logscale == 1){ 
 				hs->Fill( log(* variable_s) );
 			}else{
 				hs->Fill( * variable_s );
 			}
 			s_ev ++;						
-	//	}
 	}
 	double evs_saved = (double) s_ev/tot_ev;
 
 	//NORMALIZZAZIONE PDF A 1
-	//hs->Smooth(100);
-	//hb->Smooth(100);
 	double Ns = hs->Integral( );
 	double Nb = hb->Integral( );
    	for(int j = 1; j <= nbin; j++){
@@ -145,7 +138,7 @@ void toymc( string var  ){
 		dist->GetXaxis()->SetTitle( xtitle.c_str() );
 	}
 	if(logscale == 0)		dist->GetXaxis()->SetTitle( var.c_str() );
-	dist->GetYaxis()->SetTitle("dN/dx");	
+	dist->GetYaxis()->SetTitle("dN");	
 
 	string title3 = var + ".png";
 	can->Print( title3.c_str() );
@@ -174,7 +167,7 @@ void toymc( string var  ){
 		int evs_exp = (int) cr_s*br_s*lum[i]*evs_saved;
 		int evb_exp = (int) cr_b*br_b*lum[i]*evb_saved;		
 		//int evb_exp = 100*evs_exp;		
-		int Nsim=100;
+		int Nsim=2000;
 		cout<< "------------------------------------------------------------" << endl
 			<< "Luminosity: " << lum[i] << " fb^-1" << endl;
 //			<< "Type the number of MC simulation: "; cin >> Nsim;
@@ -207,11 +200,8 @@ void toymc( string var  ){
 			funz_bs->SetParameter(0, evb_exp);
 			funz_bs->SetParameter(1, evs_exp);
 
-
+			//set del range del parametro di background
 			funz_bs->SetParLimits(0,  evb_exp-5*sqrt(evb_exp), evb_exp+5*sqrt(evb_exp) );
-			//funz_bs->SetParLimits(1,  evs_exp-10*sqrt(evs_exp), evs_exp+10*sqrt(evs_exp) );
-			//funz_bs->SetParLimits(1, 0, 2*evs_exp);
-			//funz_bs->SetParLimits(0, 0, 2*evb_exp);
 
 			for (int j=2; j<dof+3; j++) 		funz_bs->FixParameter(j, pdf_funzb->GetParameter(j-2));
 			for (int j=dof+3; j<2*dof+4; j++) 	funz_bs->FixParameter(j, pdf_funzs->GetParameter(j-(dof+3)));
