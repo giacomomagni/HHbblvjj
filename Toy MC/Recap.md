@@ -1,7 +1,13 @@
 Toy MC simulation to estime which variable gives the best relative uncertainty on the number of Signal evts predicted.
 The pdf are fitted separately using a polN. 
-Random generation of N exepected events for background and signal
-Fit of B+S distribution and fit with f(x,N_s, N_b) = N_s*pdf_s(x)+N_b*pdf_b(x) (N_s and N_b are now parameters to be estimated)
+Random generation of N exepected events for background and signal.
+
+Fit of B+S distribution and fit with:
+
+			f(x,N_s, N_b) = N_s*pdf_s(x)+N_b*pdf_b(x)     
+
+N_s and N_b are now parameters to be estimated
+
 Evaluation of relative uncertainty on N_s at different values of luminosity. 
 Calulation of epected N_s and N_b 
 
