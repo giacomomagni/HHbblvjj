@@ -1,7 +1,7 @@
 //Read and store all the variables
 //
 
-// c++ -o reading reading.cpp `root-config --cflags --glibs`
+// c++ -o completereading completereading.cpp `root-config --cflags --glibs`
 #include "LHEF.h"
 #include<iostream>
 #include "TH1.h"
@@ -34,19 +34,22 @@ int main(int argc, char** argv){
 	double j_Et, bb_Et, ww_Et;
 	double Ht, Htnu, Ptm;
 	double deltar_ljj, deltar_bbljj, deltar_bb;
-	double deltaphi_ljj, deltaphi_bbljj, deltaphi_bb;
+	double deltaphi_ljj, deltaphi_bbljj, deltaphi_bb, deltaphi_bwbw;
     
     TH1F *q1 = new TH1F("q1", "PGID of j1", 20, -10, 10);
 	TH1F *q2 = new TH1F("q2", "PGID of j2", 20, -10, 10);   
     TH1F* l1 = new TH1F("l1", "PGID of lepton", 40, -20, 20);
-	
+   
     tree->Branch("lep_pt", &lep_pt);
+	tree->Branch("lep_eta", &lep_eta);
 	tree->Branch("lep_E", &lep_E);
 	tree->Branch("lep_Et", &lep_Et);
     tree->Branch("n_pt", &n_pt);
     tree->Branch("j1_pt", &j1_pt);
+	tree->Branch("j1_eta", &j1_eta);
     tree->Branch("j2_pt", &j2_pt);	
     tree->Branch("b1_pt", &b1_pt);
+	tree->Branch("b1_eta", &b1_eta);
     tree->Branch("b2_pt", &b2_pt);
 
 	tree->Branch("mjj", &mjj);
@@ -66,6 +69,7 @@ int main(int argc, char** argv){
 	tree->Branch("deltaphi_bb", &deltaphi_bb);
 	tree->Branch("deltaphi_ljj", &deltaphi_ljj);
 	tree->Branch("deltaphi_bbljj", &deltaphi_bbljj);
+	tree->Branch("deltaphi_bwbw", &deltaphi_bwbw);
 
 	tree->Branch("deltar_bb", &deltar_bb);
 	tree->Branch("deltar_ljj", &deltar_ljj);
@@ -98,7 +102,7 @@ int main(int argc, char** argv){
             //TlorentVector of lepton and neutrino
             TLorentzVector lep_mom, nu_mom; 
 			//TlorentVector of quarks beauty and antibeauty
-            TLorentzVector b1_mom, b2_mom, bb_mom; 
+            TLorentzVector b1_mom, b2_mom, bb_mom, bw1_mom, bw2_mom; 
             
             //Save quadrimomentum of all particles mapped with position in the event
             map<int, TLorentzVector> momenta;
@@ -164,7 +168,7 @@ int main(int argc, char** argv){
 						b2_phi = momentum.Phi();
                     }
                     // Other quarks in final state are from the jet 
-                    if ( abs(ID) < 7 && abs(ID) != 5 ){  
+                    if ( abs(ID) < 6 && abs(ID) != 5 ){  
                         quarks_jet.push_back(iPart);
                         jets.push_back(iPart);
                     }   
@@ -215,6 +219,10 @@ int main(int argc, char** argv){
 						w1_mom = jet_j1_mom + jet_j2_mom; 
 						deltaphi_bbljj = bb_mom.DeltaPhi( lep_mom + w1_mom);
 						deltar_bbljj = bb_mom.DeltaR( lep_mom + w1_mom);
+
+						bw1_mom = b1_mom + lep_mom; 
+						bw2_mom = b2_mom + w1_mom;
+						deltaphi_bwbw = bw1_mom.DeltaPhi( bw2_mom );
 						tree->Fill();
                  }//end of jet construction 
 			}else{
